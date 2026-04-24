@@ -68,6 +68,7 @@ app = dash.Dash(
     meta_tags=[{"name":"viewport","content":"width=device-width,initial-scale=1"}],
     title="ECOLOOP-2026 | Industrial IoT",
 )
+server = app.server
 from flask import request, jsonify
 
 # ── Global store for incoming real sensor data ──────────
@@ -825,7 +826,7 @@ def update_store(_, data, auth):
         prev_vals = data.get(sid,[])
         prev = prev_vals[-1] if prev_vals else SENSORS[sid]["nominal"]
 
-        # ── USE REAL DATA if available, else simulate ──
+        # Use real data if available, else simulate
         if sid in live_data:
             new_val = round(live_data[sid], 2)
         else:
