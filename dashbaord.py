@@ -69,7 +69,14 @@ app = dash.Dash(
     title="NEXUS-2026 | Industrial IoT",
 )
 server = app.server
+from flask import request, jsonify
 
+@server.route('/api/sensor', methods=['POST'])
+def receive_sensor():
+    data = request.get_json()
+    # data = {"sensor_id": "temp_1", "value": 72.5}
+    print(f"Received: {data}")
+    return jsonify({"status": "ok"})
 # ════════════════════════════════════════════════════════════
 # DATA SIMULATION
 # ════════════════════════════════════════════════════════════
