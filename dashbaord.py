@@ -1,6 +1,6 @@
 """
 ╔══════════════════════════════════════════════════════════════╗
-║  NEXUS-2026  Industrial IoT Dashboard  — Production Ready    ║
+║  ECOLOOP-2026  Industrial IoT Dashboard  — Production Ready    ║
 ║  Stack: Python · Dash · Plotly · Bootstrap · MQTT-Ready      ║
 ╚══════════════════════════════════════════════════════════════╝
 """
@@ -66,7 +66,7 @@ app = dash.Dash(
     ],
     suppress_callback_exceptions=True,
     meta_tags=[{"name":"viewport","content":"width=device-width,initial-scale=1"}],
-    title="NEXUS-2026 | Industrial IoT",
+    title="ECOLOOP-2026 | Industrial IoT",
 )
 server = app.server
 from flask import request, jsonify
@@ -172,9 +172,9 @@ def make_header(user_info=None):
     if user_info:
         role_badge = dbc.Badge(user_info["role"], color="info", className="ms-2",
                                style={"fontFamily":"Orbitron,monospace","fontSize":"9px","letterSpacing":"2px"})
-    return html.Div(className="nexus-header", children=[
-        html.Div(className="nexus-logo", children=[
-            "NEXUS", html.Span("INDUSTRIAL IoT PLATFORM")
+    return html.Div(className="ECOLOOP-header", children=[
+        html.Div(className="ECOLOOP-logo", children=[
+            "ECOLOOP", html.Span("INDUSTRIAL IoT PLATFORM")
         ]),
         html.Div([
             html.Span(className="header-status-dot status-online"),
@@ -595,7 +595,7 @@ def make_scada_svg(data):
       <line x1="260" y1="360" x2="295" y2="360" stroke="rgba(0,212,255,0.7)" stroke-width="2" stroke-dasharray="6,4"/>
       <text x="300" y="364" fill="#888" font-size="9">FLOW</text>
       <text x="700" y="364" fill="rgba(0,212,255,0.4)" font-size="8"
-            font-family="Orbitron,monospace">NEXUS-2026 SCADA v2.0</text>
+            font-family="Orbitron,monospace">ECOLOOP-2026 SCADA v2.0</text>
     </svg>
     """
     return html.Div([
@@ -612,7 +612,7 @@ def make_scada_svg(data):
 # ════════════════════════════════════════════════════════════
 login_layout = html.Div(className="login-page", children=[
     html.Div(className="login-card", children=[
-        html.Div("NEXUS-2026", className="login-title"),
+        html.Div("ECOLOOP-2026", className="login-title"),
         html.Div("INDUSTRIAL IoT PLATFORM", className="login-subtitle"),
         dbc.Form([
             dbc.Stack([
@@ -1007,7 +1007,7 @@ def export_csv(n, data, selected):
     for i, ts in enumerate(ts_list):
         row = [ts] + [data.get(sid,[0])[i] if i < len(data.get(sid,[])) else "" for sid in (selected or SENSORS)]
         writer.writerow(row)
-    return dict(content=buf.getvalue(), filename=f"nexus_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
+    return dict(content=buf.getvalue(), filename=f"ECOLOOP_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
 
 # ════════════════════════════════════════════════════════════
 # MQTT STUB (wire up your broker here)
@@ -1033,7 +1033,7 @@ def setup_mqtt(broker="localhost", port=1883):
 if __name__ == "__main__":
     print("""
     ╔══════════════════════════════════════════════════════╗
-    ║   NEXUS-2026 Industrial IoT Dashboard                ║
+    ║   ECOLOOP-2026 Industrial IoT Dashboard                ║
     ║   → http://127.0.0.1:8050                            ║
     ║   Credentials: admin/admin123  operator/operator123  ║
     ╚══════════════════════════════════════════════════════╝
