@@ -68,15 +68,33 @@ app = dash.Dash(
     meta_tags=[{"name":"viewport","content":"width=device-width,initial-scale=1"}],
     title="ECOLOOP-2026 | Industrial IoT",
 )
-server = app.server
 from flask import request, jsonify
+
+# ── Global store for incoming real sensor data ──────────
+live_data = {}  # {"temp_1": 72.5, "pres_1": 9.1, ...}
 
 @server.route('/api/sensor', methods=['POST'])
 def receive_sensor():
     data = request.get_json()
-    # data = {"sensor_id": "temp_1", "value": 72.5}
-    print(f"Received: {data}")
-    return jsonify({"status": "ok"})
+    sid   = data.get("sensor_id")
+    value = data.get("value")
+    if sid in SENSORS and value is not None:
+        live_data[sid] = float(value)
+        return jsonify({"status": "ok", "sensor": sid, "value": value})
+    return jsonify({"status": "error", "msg": "unknown sensor_id"}), 400
+
+@server.route('/api/sensors', methods=['POST'])
+def receive_many():
+    """Send multiple sensors at once: {"temp_1":72.5, "pres_1":9.1}"""
+    data = request.get_json()
+    for sid, value in data.items():
+        if sid in SENSORS:
+            live_data[sid] = float(value)
+    return jsonify({"status": "ok", "updated": list(data.keys())})
+
+@server.route('/api/status', methods=['GET'])
+def get_status_api():
+    return jsonify(live_data)
 # ════════════════════════════════════════════════════════════
 # DATA SIMULATION
 # ════════════════════════════════════════════════════════════
@@ -787,7 +805,6 @@ def make_main_dashboard():
         ]),
     ])
 
-# ── Data Engine (live update) ────────────────────────────
 @app.callback(
     Output("sensor-store","data"),
     Input("interval","n_intervals"),
@@ -807,7 +824,13 @@ def update_store(_, data, auth):
     for sid in SENSORS:
         prev_vals = data.get(sid,[])
         prev = prev_vals[-1] if prev_vals else SENSORS[sid]["nominal"]
-        new_val = simulate_value(sid, prev)
+
+        # ── USE REAL DATA if available, else simulate ──
+        if sid in live_data:
+            new_val = round(live_data[sid], 2)
+        else:
+            new_val = simulate_value(sid, prev)
+
         prev_vals.append(new_val)
         if len(prev_vals) > MAX_HIST: prev_vals = prev_vals[-MAX_HIST:]
         data[sid] = prev_vals
